@@ -75,6 +75,6 @@ You can either use the `CarouselComponent` exported by library
 This is how you use the **component** for rendering only if visible in screen:
 ```html
 <carousel [configs]="carouselConfigs">
-  <div *ngFor="let item of items"carouselItem>{{ item }}</div>
+  <div *ngFor="let item of items" carouselItem>{{ item }}</div>
 </carousel>
 ```
