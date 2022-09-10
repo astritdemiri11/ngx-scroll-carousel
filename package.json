@@ -1,0 +1,34 @@
+{
+  "name": "ngx-scroll-carousel",
+  "version": "0.0.2",
+  "description": "Scroll carousel library for Angular.",
+  "keywords": [
+    "scroll",
+    "carousel",
+    "angular"
+  ],
+  "author": {
+    "name": "Astrit Demiri",
+    "email": "astritdemiri11@gmail.com",
+    "url": "https://astritdemiri.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/astritdemiri11/ngx-carousel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/astritdemiri11/ngx-carousel/issues"
+  },
+  "release": {
+    "repositoryUrl": "https://github.com/astritdemiri11/ngx-carousel/releases"
+  },
+  "homepage": "https://astritdemiri.com/ng-library/ngx-carousel",
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/common": "^14.1.1",
+    "@angular/core": "^14.1.1"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  }
+}

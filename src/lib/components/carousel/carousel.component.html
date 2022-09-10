@@ -1,0 +1,45 @@
+<div class="flex-fill position_relative">
+  <div (mouseover)="onNavigationOver($event)" (mouseleave)="onNavigationLeave($event)" (click)="onPrev()"
+    *ngIf="data.navigation"
+    class="navigation-button position_absolute left_0 z-index_1 flex-row flex-main-center flex-cross-center">
+    <svg viewBox="0 0 24 24" class="navigation-icon" [class]="data.navigationIconClass">
+      <path d="M0 0h24v24H0z" fill="none" />
+      <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+    </svg>
+  </div>
+
+  <ng-container *ngIf="configs && configs.mobileGestures; else noMobileGestures">
+    <div class="flex-fill flex-column flex-gap-8p" (swipeup)="onNext()" (swipeleft)="onNext()" (swipedown)="onPrev()"
+      (swiperight)="onPrev()">
+      <ng-container [ngTemplateOutlet]="carouselContent"></ng-container>
+    </div>
+  </ng-container>
+
+  <ng-template #noMobileGestures>
+    <div class="flex-fill flex-column flex-gap-8p">
+      <ng-container [ngTemplateOutlet]="carouselContent"></ng-container>
+    </div>
+  </ng-template>
+
+  <ng-template #carouselContent>
+    <div #carouselContainer class="container flex flex-row overflow_hidden">
+      <ng-content (contentChange)="onContentChanged()" select="[carouselItem]"></ng-content>
+    </div>
+
+    <div *ngIf="data.controls" class="flex-row flex-main-center flex-cross-center flex-gap-8p">
+      <div *ngFor="let control of controls" (mouseover)="onControlsOver($event)" (mouseleave)="onControlsLeave($event)"
+        (click)="onControl(control)" class="control" [class]="data.controlsButtonClass"
+        [ngClass]="{ 'theme-accent_background': control === index }">
+      </div>
+    </div>
+  </ng-template>
+
+  <div (mouseover)="onNavigationOver($event)" (mouseleave)="onNavigationLeave($event)" (click)="onNext()"
+    *ngIf="data.navigation"
+    class="navigation-button position_absolute right_0 z-index_1 flex-row flex-main-center flex-cross-center">
+    <svg viewBox="0 0 24 24" class="navigation-icon" [class]="data.navigationIconClass">
+      <path d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+    </svg>
+  </div>
+</div>
