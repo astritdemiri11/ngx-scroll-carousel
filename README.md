@@ -1,12 +1,12 @@
-# ngx-carousel
+# ngx-scroll-carousel
 
 Scroll carousel library for Angular.
 
-Official documentation: https://astritdemiri.com/ng-library/ngx-carousel
+Official documentation: https://astritdemiri.com/ng-library/ngx-scroll-carousel
 
-Simple example using ngx-carousel: https://stackblitz.com/github/astritdemiri11/ngx-carousel-example
+Simple example using ngx-scroll-carousel: https://stackblitz.com/github/astritdemiri11/ngx-scroll-carousel-example
 
-Get the complete changelog here: https://github.com/astritdemiri11/ngx-carousel/releases
+Get the complete changelog here: https://github.com/astritdemiri11/ngx-scroll-carousel/releases
 
 ## Table of Contents
 * [Installation](#installation)
@@ -20,12 +20,12 @@ Get the complete changelog here: https://github.com/astritdemiri11/ngx-carousel/
 First you need to install the npm module:
 
 ```sh
-npm install ngx-carousel --save
+npm install ngx-scroll-carousel --save
 ```
 
 Choose the version corresponding to your Angular version:
 
- Angular       | ngx-carousel
+ Angular       | ngx-scroll-carousel
  ------------- | ---------------
  14 (ivy only) | 1.x+           
 
@@ -34,12 +34,12 @@ Choose the version corresponding to your Angular version:
 
 #### 1. Import the `CarouselModule`:
 
-Finally, you can use ngx-carousel in your Angular project. You have to import `CarouselModule` in the root NgModule of your application.
+Finally, you can use ngx-scroll-carousel in your Angular project. You have to import `CarouselModule` in the root NgModule of your application.
 
 ```ts
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {CarouselModule} from 'ngx-carousel';
+import {CarouselModule} from 'ngx-scroll-carousel';
 
 @NgModule({
     imports: [
