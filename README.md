@@ -1,24 +1,80 @@
-# NgxCarousel
+# ngx-carousel
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.
+Scroll carousel library for Angular.
 
-## Code scaffolding
+Official documentation: https://astritdemiri.com/ng-library/ngx-carousel
 
-Run `ng generate component component-name --project ngx-carousel` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ngx-carousel`.
-> Note: Don't forget to add `--project ngx-carousel` or else it will be added to the default project in your `angular.json` file. 
+Simple example using ngx-carousel: https://stackblitz.com/github/astritdemiri11/ngx-carousel-example
 
-## Build
+Get the complete changelog here: https://github.com/astritdemiri11/ngx-carousel/releases
 
-Run `ng build ngx-carousel` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Table of Contents
+* [Installation](#installation)
+* [Usage](#usage)
+  * [Import the CarouselModule](#1-import-the-carouselmodule)
+    * [SharedModule](#sharedmodule)
+  * [Use the service, the pipe or the directive](#use-the-service-the-pipe-the-component-or-the-directive)
 
-## Publishing
+## Installation
 
-After building your library with `ng build ngx-carousel`, go to the dist folder `cd dist/ngx-carousel` and run `npm publish`.
+First you need to install the npm module:
 
-## Running unit tests
+```sh
+npm install ngx-carousel --save
+```
 
-Run `ng test ngx-carousel` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Choose the version corresponding to your Angular version:
 
-## Further help
+ Angular       | ngx-carousel
+ ------------- | ---------------
+ 14 (ivy only) | 1.x+           
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Usage
+
+#### 1. Import the `CarouselModule`:
+
+Finally, you can use ngx-carousel in your Angular project. You have to import `CarouselModule` in the root NgModule of your application.
+
+```ts
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {CarouselModule} from 'ngx-carousel';
+
+@NgModule({
+    imports: [
+        CarouselModule,
+        BrowserModule
+    ],
+    bootstrap: [AppComponent]
+})
+export class AppModule { }
+```
+
+##### SharedModule
+
+If you use a [`SharedModule`](https://angular.io/guide/sharing-ngmodules) that you import in multiple other feature modules,
+you can export the `CarouselModule` to make sure you don't have to import it in every module.
+
+```ts
+@NgModule({
+    exports: [
+        CarouselModule,
+        CommonModule
+    ]
+})
+export class SharedModule { }
+```
+
+> Note: Module services are provided in root `@Injectable({ providedIn: 'root' })`, see [`Dependency Injection`](https://angular.io/guide/dependency-injection).
+
+#### Use the service, the pipe, the component or the directive:
+
+You can either use the `CarouselComponent` exported by library
+
+This is how you use the **component** for rendering only if visible in screen:
+```html
+<carousel [configs]="carouselConfigs">
+  <div *ngFor="let item of items"carouselItem>{{ item }}</div>
+</carousel>
+```
