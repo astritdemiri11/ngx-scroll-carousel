@@ -88,11 +88,18 @@
 }
 
 .navigation-over-class,
-.controls-button-class {
-  background: #030303;
+.controls-active-class {
+  background: #333;
 }
 
-.navigation-icon-class,
-.controls-active-class {
+.navigation-icon-class {
   fill: white;
+}
+
+.controls-button-class {
+  background: #999;
+}
+
+.controls-over-class {
+  background: #f00;
 }

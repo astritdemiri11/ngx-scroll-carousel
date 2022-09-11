@@ -100,19 +100,27 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
     this.renderer2.removeClass(event.currentTarget, this.data.navigationOverClass);
   }
 
+  getControlsActiveClass(control: number) {
+    if (this.index === control) {
+      return this.data.controlsActiveClass;
+    }
+
+    return '';
+  }
+
   ngAfterContentInit() {
-    if(this.carouselContainer) {
+    if (this.carouselContainer) {
       this.content = this.carouselContainer.nativeElement.innerHTML;
     }
   }
 
   ngAfterContentChecked() {
-    if(!this.carouselItems) {
+    if (!this.carouselItems) {
       return;
     }
 
-    if(this.carouselContainer) {
-      if(this.content === this.carouselContainer.nativeElement.innerHTML) {
+    if (this.carouselContainer) {
+      if (this.content === this.carouselContainer.nativeElement.innerHTML) {
         return;
       }
 
@@ -150,7 +158,7 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
       this.interval$.unsubscribe();
     }
 
-    if(!this.carouselItems || !this.carouselContainer) {
+    if (!this.carouselItems || !this.carouselContainer) {
       return;
     }
 
@@ -177,7 +185,7 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
   }
 
   private goToNext(step: number = 1, restart: boolean = false) {
-    if(this.scrolling) {
+    if (this.scrolling) {
       return;
     }
 
@@ -207,7 +215,7 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
   }
 
   private goToPrev(step: number = 1) {
-    if(this.scrolling) {
+    if (this.scrolling) {
       return;
     }
 
