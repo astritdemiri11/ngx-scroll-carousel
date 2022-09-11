@@ -87,6 +87,10 @@
   cursor: pointer;
 }
 
+.controls-button-class {
+  background: #999;
+}
+
 .navigation-over-class,
 .controls-active-class {
   background: #333;
@@ -94,10 +98,6 @@
 
 .navigation-icon-class {
   fill: white;
-}
-
-.controls-button-class {
-  background: #999;
 }
 
 .controls-over-class {
