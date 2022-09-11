@@ -11,7 +11,7 @@ Get the complete changelog here: https://github.com/astritdemiri11/ngx-scroll-ca
 ## Table of Contents
 * [Installation](#installation)
 * [Usage](#usage)
-  * [Import the CarouselModule](#1-import-the-carouselmodule)
+  * [Import the ScrollCarouselModule](#1-import-the-scrollcarouselmodule)
     * [SharedModule](#sharedmodule)
   * [Use the service, the pipe or the directive](#use-the-service-the-pipe-the-component-or-the-directive)
 
@@ -32,19 +32,19 @@ Choose the version corresponding to your Angular version:
 
 ## Usage
 
-#### 1. Import the `CarouselModule`:
+#### 1. Import the `ScrollCarouselModule`:
 
-Finally, you can use ngx-scroll-carousel in your Angular project. You have to import `CarouselModule` in the root NgModule of your application.
+Finally, you can use ngx-scroll-carousel in your Angular project. You have to import `ScrollCarouselModule` in the root NgModule of your application.
 
 ```ts
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {CarouselModule} from 'ngx-scroll-carousel';
+import {ScrollCarouselModule} from 'ngx-scroll-carousel';
 
 @NgModule({
     imports: [
-        CarouselModule,
-        BrowserModule
+        BrowserModule,
+        ScrollCarouselModule
     ],
     bootstrap: [AppComponent]
 })
@@ -54,13 +54,13 @@ export class AppModule { }
 ##### SharedModule
 
 If you use a [`SharedModule`](https://angular.io/guide/sharing-ngmodules) that you import in multiple other feature modules,
-you can export the `CarouselModule` to make sure you don't have to import it in every module.
+you can export the `ScrollCarouselModule` to make sure you don't have to import it in every module.
 
 ```ts
 @NgModule({
     exports: [
-        CarouselModule,
-        CommonModule
+        CommonModule,
+        ScrollCarouselModule
     ]
 })
 export class SharedModule { }

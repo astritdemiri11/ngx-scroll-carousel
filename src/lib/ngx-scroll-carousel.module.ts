@@ -19,4 +19,4 @@ import { CarouselItemDirective } from './directives/carousel-item/carousel-item.
     CarouselItemDirective
   ]
 })
-export class CarouselModule { }
+export class ScrollCarouselModule { }
