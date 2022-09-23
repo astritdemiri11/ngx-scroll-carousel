@@ -6,6 +6,7 @@ export interface CarouselConfig {
   controlsOverClass?: string;
   controlsWrapperClasses?: string[];
   items: number;
+  itemsGapPX?: number;
   mobileGestures?: boolean;
   navigation?: boolean;
   navigationIconClass?: string;

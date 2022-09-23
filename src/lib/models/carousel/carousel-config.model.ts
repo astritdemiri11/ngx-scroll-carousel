@@ -8,6 +8,7 @@ export class CarouselConfig implements CarouselConfigInterface {
   controlsOverClass: string;
   controlsWrapperClasses: string[];
   items: number;
+  itemsGapPX: number;
   mobileGestures: boolean;
   navigation: boolean;
   navigationIconClass: string;
@@ -37,6 +38,7 @@ export class CarouselConfig implements CarouselConfigInterface {
     this.controlsOverClass = config.controlsOverClass || 'controls-over-class';
     this.controlsWrapperClasses = config.controlsWrapperClasses || ['controls-wrapper-class'];
     this.items = config.items || 0;
+    this.itemsGapPX = config.itemsGapPX || 0;
 
     this.navigation = true;
 

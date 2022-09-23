@@ -198,7 +198,7 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
     this.itemsLength = this.carouselItems.length;
     this.index = 0;
 
-    this.carouselItems.forEach(carouselItem => {
+    this.carouselItems.forEach((carouselItem: ElementRef, index: number) => {
       const elem = carouselItem.nativeElement;
 
       let itemsLength = this.data.items;
@@ -207,7 +207,25 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
         itemsLength = this.itemsLength;
       }
 
-      this.renderer2.setStyle(elem, 'flex', `0 0 ${100 / itemsLength}%`);
+      let itemsGap = 0;
+
+      if(this.data.itemsGapPX) {
+        itemsGap = this.data.itemsGapPX;
+      }
+
+      if(itemsLength > 1) {
+        this.renderer2.setStyle(elem, 'flex', `0 0 calc(${(100 / itemsLength) - ((itemsGap * 2) / 100)}% - ${itemsGap / 2}px)`);
+      } else {
+        this.renderer2.setStyle(elem, 'flex', `0 0 100%`);
+      }
+
+      if(this.data.itemsGapPX && index + 1 < this.itemsLength) {
+        if(this.data.verticalVersion) {
+          this.renderer2.setStyle(elem, 'margin-bottom', this.data.itemsGapPX + 'px');
+        } else {
+          this.renderer2.setStyle(elem, 'margin-right', this.data.itemsGapPX + 'px');
+        }
+      }
     });
 
     if (this.data.autoplay) {
@@ -263,9 +281,9 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
 
           if (firstItem) {
             if (this.data.verticalVersion) {
-              elem.scrollTop += (firstItem.nativeElement.offsetHeight * this.data.slide * step);
+              elem.scrollTop += ((firstItem.nativeElement.offsetHeight + this.data.itemsGapPX) * this.data.slide * step);
             } else {
-              elem.scrollLeft += (firstItem.nativeElement.offsetWidth * this.data.slide * step);
+              elem.scrollLeft += ((firstItem.nativeElement.offsetWidth + this.data.itemsGapPX) * this.data.slide * step);
             }
 
             this.index += step;
@@ -296,9 +314,9 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
 
         if (firstItem) {
           if (this.data.verticalVersion) {
-            elem.scrollTop -= (firstItem.nativeElement.offsetHeight * this.data.slide * step);
+            elem.scrollTop -= ((firstItem.nativeElement.offsetHeight + this.data.itemsGapPX) * this.data.slide * step);
           } else {
-            elem.scrollLeft -= (firstItem.nativeElement.offsetWidth * this.data.slide * step);
+            elem.scrollLeft -= ((firstItem.nativeElement.offsetWidth + this.data.itemsGapPX) * this.data.slide * step);
           }
 
           this.index -= step;
