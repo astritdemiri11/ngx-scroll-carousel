@@ -46,12 +46,20 @@
   position: relative;
 }
 
+.bottom_0 {
+  bottom: 0;
+}
+
 .left_0 {
   left: 0;
 }
 
 .right_0 {
   right: 0;
+}
+
+.top_0 {
+  top: 0;
 }
 
 .z-index_1 {
@@ -67,12 +75,41 @@
 }
 
 .navigation-button {
-  width: 40px;
-  height: 60px;
-  top: calc(50% - 30px);
   border-radius: 8px;
   cursor: pointer;
   transition: background 300ms ease-in-out;
+}
+
+:not(.vertical-version) .navigation-button {
+  width: 40px;
+  height: 60px;
+  top: calc(50% - 30px);
+}
+
+.vertical-version .navigation-button {
+  width: 60px;
+  height: 40px;
+  left: calc(50% - 30px);
+}
+
+:not(.vertical-version) .navigation-button.navigation-outset:first-child {
+  left: -40px
+}
+
+:not(.vertical-version) .navigation-button.navigation-outset:last-child {
+  right: -40px
+}
+
+.vertical-version .navigation-button.navigation-outset:first-child {
+  top: -40px
+}
+
+.vertical-version .navigation-button.navigation-outset:last-child {
+  bottom: -40px
+}
+
+.navigation-button.disabled {
+  cursor: not-allowed;
 }
 
 .navigation-icon {
@@ -87,19 +124,30 @@
   cursor: pointer;
 }
 
+.control.disabled {
+  cursor: not-allowed;
+}
+
+.controls-wrapper-class {
+  margin-top: 8px;
+}
+
 .controls-button-class {
   background: #999;
 }
 
-.navigation-over-class,
+.controls-over-class {
+  background: #f00;
+}
+
 .controls-active-class {
+  background: #333;
+}
+
+.navigation-over-class {
   background: #333;
 }
 
 .navigation-icon-class {
   fill: white;
-}
-
-.controls-over-class {
-  background: #f00;
 }

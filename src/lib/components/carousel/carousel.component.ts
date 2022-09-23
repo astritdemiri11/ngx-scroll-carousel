@@ -12,6 +12,7 @@ import {
   Renderer2,
   SimpleChanges,
   ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import { interval, Subscription, timer } from 'rxjs';
 
@@ -27,16 +28,18 @@ import { CarouselConfig } from '../../models/carousel/carousel-config.model';
 export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, AfterContentChecked, OnDestroy {
   @Input() configs?: CarouselConfigInterface;
   @ViewChild('carouselContainer') carouselContainer?: ElementRef<HTMLDivElement>;
+  @ViewChild('control', { static: false }) control?: ElementRef;
+  @ViewChildren('navigation') navigation?: QueryList<ElementRef>;
   @ContentChildren(CarouselItemDirective, { read: ElementRef }) carouselItems?: QueryList<ElementRef>;
 
   data: CarouselConfig;
   index: number;
   controls: number[];
+  scrolling: boolean;
 
   private content: string;
   private itemsLength: number;
   private scrollDuration: number;
-  private scrolling: boolean;
   private subscriptions: Subscription[];
   private interval$?: Subscription;
 
@@ -52,7 +55,13 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
     this.subscriptions = [];
   }
 
-  onPrev() {
+  onPrev(event: Event) {
+    event.preventDefault();
+
+    if (!this.controls.length) {
+      return;
+    }
+
     if (this.interval$) {
       this.interval$.unsubscribe();
     }
@@ -61,7 +70,13 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
     this.startCarousel();
   }
 
-  onNext() {
+  onNext(event: Event) {
+    event.preventDefault();
+
+    if (!this.controls.length) {
+      return;
+    }
+
     if (this.interval$) {
       this.interval$.unsubscribe();
     }
@@ -71,6 +86,10 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
   }
 
   onControl(index: number) {
+    if (this.scrolling || !this.controls.length) {
+      return;
+    }
+
     if (this.interval$) {
       this.interval$.unsubscribe();
     }
@@ -140,7 +159,15 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.data = new CarouselConfig(changes['configs'].currentValue);
+    if (changes['configs']) {
+      this.configs = changes['configs'].currentValue;
+    }
+
+    if (!this.configs) {
+      throw new Error(`carousel component, [configs] attribute is required`);
+    }
+
+    this.data = new CarouselConfig(this.configs);
     this.restart();
   }
 
@@ -162,13 +189,25 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
       return;
     }
 
-    this.carouselContainer.nativeElement.scrollLeft = 0;
+    if (this.data.verticalVersion) {
+      this.carouselContainer.nativeElement.scrollTop = 0;
+    } else {
+      this.carouselContainer.nativeElement.scrollLeft = 0;
+    }
+
     this.itemsLength = this.carouselItems.length;
     this.index = 0;
 
     this.carouselItems.forEach(carouselItem => {
       const elem = carouselItem.nativeElement;
-      this.renderer2.setStyle(elem, 'flex', `0 0 ${100 / this.data.items}%`);
+
+      let itemsLength = this.data.items;
+
+      if (itemsLength > this.itemsLength) {
+        itemsLength = this.itemsLength;
+      }
+
+      this.renderer2.setStyle(elem, 'flex', `0 0 ${100 / itemsLength}%`);
     });
 
     if (this.data.autoplay) {
@@ -176,33 +215,59 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
     }
 
     if (this.itemsLength > 0) {
-      const length = this.itemsLength - this.data.items + 1;
+      const length = this.itemsLength - Math.floor(this.data.items) + 1;
 
-      if (length > 0) {
+      if (length > 1) {
         this.controls = Array(length).fill(0).map((_x, i) => i);
       }
     }
+
+    if (this.navigation) {
+      this.navigation.forEach(navigation => {
+        this.data.navigationWrapperClasses.forEach(className => {
+          this.renderer2.addClass(navigation.nativeElement, className);
+        });
+      });
+    }
+
+    this.data.controlsWrapperClasses.forEach(className => {
+      if (this.control) {
+        this.renderer2.addClass(this.control.nativeElement, className);
+      }
+    });
   }
 
   private goToNext(step: number = 1, restart: boolean = false) {
-    if (this.scrolling) {
-      return;
-    }
-
     this.scrolling = true;
 
     if (this.carouselContainer) {
       const elem = this.carouselContainer.nativeElement;
 
-      if (restart && elem.offsetWidth + elem.scrollLeft >= elem.scrollWidth) {
-        this.carouselContainer.nativeElement.scrollLeft = 0;
+      let condition = elem.offsetWidth + elem.scrollLeft + 1 >= elem.scrollWidth;
+
+      if (this.data.verticalVersion) {
+        condition = elem.offsetHeight + elem.scrollTop + 1 >= elem.scrollHeight
+      }
+
+      if (restart && condition) {
+        if (this.data.verticalVersion) {
+          elem.scrollTop = 0;
+        } else {
+          elem.scrollLeft = 0;
+        }
+
         this.index = 0;
       } else {
         if (this.carouselItems) {
           const firstItem = this.carouselItems.get(0);
 
           if (firstItem) {
-            this.carouselContainer.nativeElement.scrollLeft += (firstItem.nativeElement.offsetWidth * this.data.slide * step);
+            if (this.data.verticalVersion) {
+              elem.scrollTop += (firstItem.nativeElement.offsetHeight * this.data.slide * step);
+            } else {
+              elem.scrollLeft += (firstItem.nativeElement.offsetWidth * this.data.slide * step);
+            }
+
             this.index += step;
           }
         }
@@ -215,18 +280,29 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
   }
 
   private goToPrev(step: number = 1) {
-    if (this.scrolling) {
-      return;
-    }
-
     this.scrolling = true;
 
-    if (this.carouselContainer && this.carouselContainer.nativeElement.scrollLeft > 0 && this.carouselItems) {
-      const firstItem = this.carouselItems.get(0);
+    if (this.carouselContainer) {
+      const elem = this.carouselContainer.nativeElement;
 
-      if (firstItem) {
-        this.carouselContainer.nativeElement.scrollLeft -= (firstItem.nativeElement.offsetWidth * this.data.slide * step);
-        this.index -= step;
+      let condition = elem.scrollLeft > 0;
+
+      if (this.data.verticalVersion) {
+        condition = elem.scrollTop > 0;
+      }
+
+      if (condition && this.carouselItems) {
+        const firstItem = this.carouselItems.get(0);
+
+        if (firstItem) {
+          if (this.data.verticalVersion) {
+            elem.scrollTop -= (firstItem.nativeElement.offsetHeight * this.data.slide * step);
+          } else {
+            elem.scrollLeft -= (firstItem.nativeElement.offsetWidth * this.data.slide * step);
+          }
+
+          this.index -= step;
+        }
       }
     }
 
