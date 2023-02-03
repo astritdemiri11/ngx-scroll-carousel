@@ -163,10 +163,7 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
       return;
     }
 
-    if (!this.configs.omitChanges || !this.changesApplied) {
-      this.restart();
-      this.changesApplied = true;
-    }
+    this.restart();
   }
 
   ngOnInit() {
@@ -202,79 +199,83 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
   }
 
   private restart() {
-    if (this.interval$) {
-      this.interval$.unsubscribe();
-    }
-
-    if (!this.carouselItems || !this.carouselContainer) {
+    if (!this.carouselItems || this.carouselItems.length === 0 || !this.carouselContainer) {
       return;
     }
 
-    if (this.data.verticalVersion) {
-      this.carouselContainer.nativeElement.scrollTop = 0;
-    } else {
-      this.carouselContainer.nativeElement.scrollLeft = 0;
-    }
-
-    this.itemsLength = this.carouselItems.length;
-
-    let itemsLength = this.data.items;
-
-    if (itemsLength > this.itemsLength) {
-      itemsLength = this.itemsLength;
-    }
-
-    let itemsGap = 0;
-
-    if (this.data.itemsGapPX) {
-      itemsGap = this.data.itemsGapPX;
-    }
-
-    this.index = 0;
-
-    this.carouselItems.forEach((carouselItem: ElementRef, index: number) => {
-      const elem = carouselItem.nativeElement;
-
-      if (itemsLength > 1) {
-        this.renderer2.setStyle(elem, 'flex', `0 0 calc(${(100 / itemsLength)}% - ${itemsGap * (itemsLength - 1) / itemsLength}px)`);
-      } else {
-        this.renderer2.setStyle(elem, 'flex', `0 0 100%`);
+    if (this.configs && (!this.configs.omitChanges || !this.changesApplied)) {
+      if (this.interval$) {
+        this.interval$.unsubscribe();
       }
 
-      if (this.data.itemsGapPX && index + 1 < this.itemsLength) {
-        if (this.data.verticalVersion) {
-          this.renderer2.setStyle(elem, 'margin-bottom', this.data.itemsGapPX + 'px');
+      if (this.data.verticalVersion) {
+        this.carouselContainer.nativeElement.scrollTop = 0;
+      } else {
+        this.carouselContainer.nativeElement.scrollLeft = 0;
+      }
+
+      this.itemsLength = this.carouselItems.length;
+
+      let itemsLength = this.data.items;
+
+      if (itemsLength > this.itemsLength) {
+        itemsLength = this.itemsLength;
+      }
+
+      let itemsGap = 0;
+
+      if (this.data.itemsGapPX) {
+        itemsGap = this.data.itemsGapPX;
+      }
+
+      this.index = 0;
+
+      this.carouselItems.forEach((carouselItem: ElementRef, index: number) => {
+        const elem = carouselItem.nativeElement;
+
+        if (itemsLength > 1) {
+          this.renderer2.setStyle(elem, 'flex', `0 0 calc(${(100 / itemsLength)}% - ${itemsGap * (itemsLength - 1) / itemsLength}px)`);
         } else {
-          this.renderer2.setStyle(elem, 'margin-right', this.data.itemsGapPX + 'px');
+          this.renderer2.setStyle(elem, 'flex', `0 0 100%`);
+        }
+
+        if (this.data.itemsGapPX && index + 1 < this.itemsLength) {
+          if (this.data.verticalVersion) {
+            this.renderer2.setStyle(elem, 'margin-bottom', this.data.itemsGapPX + 'px');
+          } else {
+            this.renderer2.setStyle(elem, 'margin-right', this.data.itemsGapPX + 'px');
+          }
+        }
+      });
+
+      if (this.data.autoplay) {
+        this.startCarousel();
+      }
+
+      if (this.itemsLength > 0) {
+        const length = this.itemsLength - Math.floor(this.data.items) + 1;
+
+        if (length > 1) {
+          this.controls = Array(length).fill(0).map((_x, i) => i);
         }
       }
-    });
 
-    if (this.data.autoplay) {
-      this.startCarousel();
-    }
-
-    if (this.itemsLength > 0) {
-      const length = this.itemsLength - Math.floor(this.data.items) + 1;
-
-      if (length > 1) {
-        this.controls = Array(length).fill(0).map((_x, i) => i);
-      }
-    }
-
-    if (this.navigation) {
-      this.navigation.forEach(navigation => {
-        this.data.navigationWrapperClasses.forEach(className => {
-          this.renderer2.addClass(navigation.nativeElement, className);
+      if (this.navigation) {
+        this.navigation.forEach(navigation => {
+          this.data.navigationWrapperClasses.forEach(className => {
+            this.renderer2.addClass(navigation.nativeElement, className);
+          });
         });
+      }
+
+      this.data.controlsWrapperClasses.forEach(className => {
+        if (this.control) {
+          this.renderer2.addClass(this.control.nativeElement, className);
+        }
       });
     }
 
-    this.data.controlsWrapperClasses.forEach(className => {
-      if (this.control) {
-        this.renderer2.addClass(this.control.nativeElement, className);
-      }
-    });
+    this.changesApplied = true;
   }
 
   private goToNext(step: number = 1, restart: boolean = false) {
