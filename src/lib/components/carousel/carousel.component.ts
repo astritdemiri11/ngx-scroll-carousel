@@ -1,7 +1,6 @@
 import {
   AfterContentChecked,
   AfterContentInit,
-  AfterViewInit,
   Component,
   ContentChildren,
   ElementRef,
@@ -28,7 +27,7 @@ import { CarouselConfig } from '../../models/carousel/carousel-config.model';
   templateUrl: './carousel.component.html',
   styleUrls: ['./carousel.component.scss']
 })
-export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy {
+export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, AfterContentChecked, OnDestroy {
   @Output() scroll: EventEmitter<number>;
   @Input() configs?: CarouselConfigInterface;
   @ViewChild('carouselContainer') carouselContainer?: ElementRef<HTMLDivElement>;
@@ -188,29 +187,12 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
     }
 
     this.restart();
-  }
-
-  ngAfterViewInit() {
-    if (this.navigation) {
-      this.navigation.forEach(navigation => {
-        this.data.navigationWrapperClasses.forEach(className => {
-          this.renderer2.addClass(navigation.nativeElement, className);
-        });
-      });
-    }
-
-    this.data.controlsWrapperClasses.forEach(className => {
-      if (this.control) {
-        this.renderer2.addClass(this.control.nativeElement, className);
-      }
-    });
+    this.resetClasses();
   }
 
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
-
-
 
   private startCarousel() {
     this.interval$ = interval(this.data.speed).subscribe(() => this.goToNext(1, true));
@@ -281,6 +263,22 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
     }
 
     this.changesApplied = true;
+  }
+
+  private resetClasses() {
+    if (this.navigation) {
+      this.navigation.forEach(navigation => {
+        this.data.navigationWrapperClasses.forEach(className => {
+          this.renderer2.addClass(navigation.nativeElement, className);
+        });
+      });
+    }
+
+    this.data.controlsWrapperClasses.forEach(className => {
+      if (this.control) {
+        this.renderer2.addClass(this.control.nativeElement, className);
+      }
+    });
   }
 
   private goToNext(step: number = 1, restart: boolean = false) {
