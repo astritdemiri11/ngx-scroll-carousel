@@ -42,6 +42,7 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
   private content: string;
   private itemsLength: number;
   private scrollDuration: number;
+  private changesApplied: boolean;
   private subscriptions: Subscription[];
   private interval$?: Subscription;
 
@@ -54,6 +55,7 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
     this.index = 0;
     this.itemsLength = 0;
     this.scrollDuration = 500;
+    this.changesApplied = false;
     this.scrolling = false;
     this.subscriptions = [];
   }
@@ -142,10 +144,6 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
     if (this.carouselContainer) {
       this.content = this.carouselContainer.nativeElement.innerHTML;
     }
-
-    if (this.configs && this.configs.omitChanges) {
-      this.restart();
-    }
   }
 
   ngAfterContentChecked() {
@@ -161,8 +159,13 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
       this.content = this.carouselContainer.nativeElement.innerHTML;
     }
 
-    if (this.configs && !this.configs.omitChanges) {
+    if (!this.configs) {
+      return;
+    }
+
+    if (!this.configs.omitChanges || !this.changesApplied) {
       this.restart();
+      this.changesApplied = true;
     }
   }
 
@@ -185,6 +188,7 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
     }
 
     this.data = new CarouselConfig(this.configs);
+
     this.restart();
   }
 
