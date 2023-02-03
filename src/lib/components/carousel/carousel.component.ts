@@ -4,10 +4,12 @@ import {
   Component,
   ContentChildren,
   ElementRef,
+  EventEmitter,
   Input,
   OnChanges,
   OnDestroy,
   OnInit,
+  Output,
   QueryList,
   Renderer2,
   SimpleChanges,
@@ -26,12 +28,12 @@ import { CarouselConfig } from '../../models/carousel/carousel-config.model';
   styleUrls: ['./carousel.component.scss']
 })
 export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, AfterContentChecked, OnDestroy {
+  @Output() scroll: EventEmitter<number>;
   @Input() configs?: CarouselConfigInterface;
   @ViewChild('carouselContainer') carouselContainer?: ElementRef<HTMLDivElement>;
   @ViewChild('control', { static: false }) control?: ElementRef;
   @ViewChildren('navigation') navigation?: QueryList<ElementRef>;
   @ContentChildren(CarouselItemDirective, { read: ElementRef }) carouselItems?: QueryList<ElementRef>;
-
   data: CarouselConfig;
   index: number;
   controls: number[];
@@ -44,6 +46,7 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
   private interval$?: Subscription;
 
   constructor(public renderer2: Renderer2) {
+    this.scroll = new EventEmitter();
     this.data = new CarouselConfig({ items: 0 });
     this.controls = [];
 
@@ -67,7 +70,10 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
     }
 
     this.goToPrev();
-    this.startCarousel();
+
+    if (this.data.autoplay) {
+      this.startCarousel();
+    }
   }
 
   onNext(event: Event) {
@@ -82,7 +88,10 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
     }
 
     this.goToNext(1, true);
-    this.startCarousel();
+
+    if (this.data.autoplay) {
+      this.startCarousel();
+    }
   }
 
   onControl(index: number) {
@@ -100,7 +109,9 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
       this.goToNext(index - this.index);
     }
 
-    this.startCarousel();
+    if (this.data.autoplay) {
+      this.startCarousel();
+    }
   }
 
   onControlsOver(event: Event) {
@@ -131,6 +142,10 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
     if (this.carouselContainer) {
       this.content = this.carouselContainer.nativeElement.innerHTML;
     }
+
+    if (this.configs && this.configs.omitChanges) {
+      this.restart();
+    }
   }
 
   ngAfterContentChecked() {
@@ -146,7 +161,9 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
       this.content = this.carouselContainer.nativeElement.innerHTML;
     }
 
-    this.restart();
+    if (this.configs && !this.configs.omitChanges) {
+      this.restart();
+    }
   }
 
   ngOnInit() {
@@ -196,31 +213,32 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
     }
 
     this.itemsLength = this.carouselItems.length;
+
+    let itemsLength = this.data.items;
+
+    if (itemsLength > this.itemsLength) {
+      itemsLength = this.itemsLength;
+    }
+
+    let itemsGap = 0;
+
+    if (this.data.itemsGapPX) {
+      itemsGap = this.data.itemsGapPX;
+    }
+
     this.index = 0;
 
     this.carouselItems.forEach((carouselItem: ElementRef, index: number) => {
       const elem = carouselItem.nativeElement;
 
-      let itemsLength = this.data.items;
-
-      if (itemsLength > this.itemsLength) {
-        itemsLength = this.itemsLength;
-      }
-
-      let itemsGap = 0;
-
-      if(this.data.itemsGapPX) {
-        itemsGap = this.data.itemsGapPX;
-      }
-
-      if(itemsLength > 1) {
-        this.renderer2.setStyle(elem, 'flex', `0 0 calc(${(100 / itemsLength) - ((itemsGap * 2) / 100)}% - ${itemsGap / 2}px)`);
+      if (itemsLength > 1) {
+        this.renderer2.setStyle(elem, 'flex', `0 0 calc(${(100 / itemsLength)}% - ${itemsGap * (itemsLength - 1) / itemsLength}px)`);
       } else {
         this.renderer2.setStyle(elem, 'flex', `0 0 100%`);
       }
 
-      if(this.data.itemsGapPX && index + 1 < this.itemsLength) {
-        if(this.data.verticalVersion) {
+      if (this.data.itemsGapPX && index + 1 < this.itemsLength) {
+        if (this.data.verticalVersion) {
           this.renderer2.setStyle(elem, 'margin-bottom', this.data.itemsGapPX + 'px');
         } else {
           this.renderer2.setStyle(elem, 'margin-right', this.data.itemsGapPX + 'px');
@@ -275,6 +293,7 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
         }
 
         this.index = 0;
+        this.scroll.emit(this.index);
       } else {
         if (this.carouselItems) {
           const firstItem = this.carouselItems.get(0);
@@ -287,6 +306,7 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
             }
 
             this.index += step;
+            this.scroll.emit(this.index);
           }
         }
       }
@@ -320,6 +340,7 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
           }
 
           this.index -= step;
+          this.scroll.emit(this.index);
         }
       }
     }

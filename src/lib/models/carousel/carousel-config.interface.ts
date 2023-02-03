@@ -8,6 +8,7 @@ export interface CarouselConfig {
   items: number;
   itemsGapPX?: number;
   mobileGestures?: boolean;
+  omitChanges?: boolean;
   navigation?: boolean;
   navigationIconClass?: string;
   navigationOutset?: boolean;
