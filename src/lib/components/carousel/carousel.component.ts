@@ -125,7 +125,7 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
   onPrev(event: Event) {
     event.preventDefault();
 
-    if (!this.controls.length) {
+    if (this.scrolling || !this.controls.length) {
       return;
     }
 
@@ -143,7 +143,7 @@ export class CarouselComponent implements OnInit, OnChanges, AfterContentInit, A
   onNext(event: Event) {
     event.preventDefault();
 
-    if (!this.controls.length) {
+    if (this.scrolling || !this.controls.length) {
       return;
     }
 
